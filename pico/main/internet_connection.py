@@ -1,24 +1,30 @@
+#Pi Pico connection to internet network
+
 import network
-import socket
-from time import sleep
-import machine
+import time
 
+ssid = 'Henlo' #Network credentials
+password = 'Q_asdfzxcv123' #input password
 
-ssid = "" #input network/hotspot name
-password = "" #input network/hotspot password
-def wConnect():
-    #Connect to WLAN
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-    wlan.connect(ssid, password)
-    while wlan.isconnected() == False:
-        print("Waiting for connection")
-        sleep(1)
-    ip = wlan.ifconfig()[0]
-    print(f'Connected on {ip}')
-    #return ip
-    
+ap = network.WLAN(network.AP_IF)
+ap.config(essid=ssid, password=password)
+ap.active(True)
+
+# wait for wifi to go active
+wait_counter = 0
+while ap.active() == False:
+    print("waiting " + str(wait_counter))
+    time.sleep(0.5)
+    pass
+
+print('WiFi active')
+status = ap.ifconfig()
+print('IP address = ' + status[0])
+print('subnet mask = ' + status[1])
+print('gateway  = ' + status[2])
+print('DNS server = ' + status[3])
+
 try:
-    wConnect()
+    ap.active()
 except KeyboardInterrupt:
     machine.reset()
