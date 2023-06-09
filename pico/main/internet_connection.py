@@ -3,8 +3,8 @@
 import network
 import time
 
-ssid = 'Henlo' #Network credentials
-password = 'Q_asdfzxcv123' #input password
+ssid = '' #Network credentials
+password = '' #input password
 
 ap = network.WLAN(network.AP_IF)
 ap.config(essid=ssid, password=password)
