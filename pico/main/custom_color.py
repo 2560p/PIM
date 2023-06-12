@@ -1,5 +1,5 @@
 def main():
-    machine_process_status = "IN_PROGRESS"  # Initial machine process status
+    machine_process_status = "IN_PROGRESS"
     
     while True:
         if machine_process_status == "IN_PROGRESS":
@@ -9,7 +9,7 @@ def main():
         else:
             color = "skyblue"
         
-        # Display the current color
+        
         turn_off_rgb()
         print(f"Displaying Color: {color}")
         red, green, blue = colors[color]
@@ -19,7 +19,7 @@ def main():
         
         time.sleep(2)
         
-        # Update the machine process status (for demonstration purposes)
+        
         if machine_process_status == "IN_PROGRESS":
             machine_process_status = "COMPLETED"
         else:
