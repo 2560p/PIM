@@ -12,15 +12,11 @@ conversation = Blueprint('conversation', __name__)
 
 prompt = "hello"
 
-# Generate a completion
-response = openai.Completion.create(
-    engine='davinci-codex',
-    prompt=prompt,
-    max_tokens=100
+completion = openai.ChatCompletion.create(
+  model="gpt-4",
+  messages=[
+    {"role": "user", "content": prompt}
+  ]
 )
 
-# Extract the generated text from the response
-generated_text = response.choices[0].text.strip()
-
-# Print the generated completion
-print(generated_text)
+print(completion.choices[0].message["content"])
