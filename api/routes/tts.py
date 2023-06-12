@@ -14,28 +14,26 @@ def tts():
   lang = request.form.get("lang")
   text = request.form.get("text")
 
-  if lang == "en":
-   # This is normal Marijn
-    url = "https://api.elevenlabs.io/v1/text-to-speech/xEucmSu4xLB83D3WYWPa"
-   
-    headers = {
-      'xi-api-key': os.environ.get("ELEVENLABS_API_KEY"),
-      'Content-Type': 'application/json'
-    }
+# This is normal Marijn
+  url = "https://api.elevenlabs.io/v1/text-to-speech/xEucmSu4xLB83D3WYWPa"
+  
+  headers = {
+    'xi-api-key': os.environ.get("ELEVENLABS_API_KEY"),
+    'Content-Type': 'application/json'
+  }
 
-    payload = {
-      "text": text,
-      "model_id": "eleven_monolingual_v1",
-      "voice_settings": {
-        "stability": 0.75,
-        "similarity_boost": 0.75
+  payload = {
+    "text": text,
+    "model_id": "eleven_monolingual_v1",
+    "voice_settings": {
+      "stability": 0.75,
+      "similarity_boost": 0.75
     }
   }
-    
-    resp = requests.post(url, json=payload, headers=headers)
 
+  if lang == "en":  
+    resp = requests.post(url, json=payload, headers=headers)
     file = io.BytesIO(resp.content)
-    # file.name = "test.mp3"
     return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
   else:
     return err("lang not supported (yet)")
