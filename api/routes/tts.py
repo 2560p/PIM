@@ -2,6 +2,10 @@ from flask import Blueprint, request, send_file
 from responses import ok, err, server_err
 import requests
 import io
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 tts_page = Blueprint('tts_page', __name__)
 
@@ -15,7 +19,7 @@ def tts():
     url = "https://api.elevenlabs.io/v1/text-to-speech/xEucmSu4xLB83D3WYWPa"
    
     headers = {
-      'xi-api-key': '',
+      'xi-api-key': os.environ.get("ELEVENLABS_API_KEY"),
       'Content-Type': 'application/json'
     }
 
@@ -35,5 +39,3 @@ def tts():
     return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
   else:
     return err("lang not supported (yet)")
-
-  
