@@ -16,7 +16,6 @@ def post():
     text = request.form.get('text')
 
     translation = translate_text(text)
-    # return "Translation: " + str(dict(request.values)) + "\n"
     return ok(translation)
 
 
