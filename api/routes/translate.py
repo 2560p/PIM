@@ -1,12 +1,14 @@
 from flask import Blueprint, request
 import openai
+import os
+from dotenv import load_dotenv
 
 from responses import ok
 
 translate_page = Blueprint('translate_page', __name__)
 
-api_key = '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'
-openai.api_key = api_key
+load_dotenv()
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 @translate_page.route('', methods=['POST'])
