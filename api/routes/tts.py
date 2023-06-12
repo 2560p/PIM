@@ -14,9 +14,6 @@ def tts():
    # This is normal Marijn
     url = "https://api.elevenlabs.io/v1/text-to-speech/xEucmSu4xLB83D3WYWPa"
    
-   # This is Angry/screaming Marijn
-   # url = "https://api.elevenlabs.io/v1/text-to-speech/5fXNDVjFv4jo0c9LTZrT"
-    
     headers = {
       'xi-api-key': '',
       'Content-Type': 'application/json'
