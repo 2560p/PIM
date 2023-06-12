@@ -28,4 +28,4 @@ def translate_text(text):
         ]
     )
 
-    return response.choices[0]
+    return response.choices[0].message.content
