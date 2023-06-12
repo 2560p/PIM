@@ -18,14 +18,14 @@ def post():
     return ok(translation)
 
 
-def translate_text(text, target_language):
-    prompt = f"Translate the following English text to {target_language}: '{text}'"
-
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        max_tokens=100
+def translate_text(text):
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system",
+             "content": "You are an assistant with translation to Dutch. Your name is Pim. You should always respond with \"Alsjeblieft!\" when someone thanks you. Otherwise, respond with a Dutch translation of the sentence. Make sure that the level of Dutch is basic, so that even a beginner can understand."},
+            {"role": "system", "content": text},
+        ]
     )
 
-    translated_text = response.choices[0].text.strip()
-    return translated_text
+    return response.choices[0]
