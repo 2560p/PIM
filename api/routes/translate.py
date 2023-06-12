@@ -18,4 +18,14 @@ def post():
     return ok(translation)
 
 
+def translate_text(text, target_language):
+    prompt = f"Translate the following English text to {target_language}: '{text}'"
 
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=100
+    )
+
+    translated_text = response.choices[0].text.strip()
+    return translated_text
