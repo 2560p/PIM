@@ -8,9 +8,10 @@ from dotenv import load_dotenv
 load_dotenv()
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
-conversation = Blueprint('conversation', __name__)
+conversation_page = Blueprint('conversation', __name__)
 
-@conversation.route('', methods=['POST'])
+
+@conversation_page.route('', methods=['POST'])
 def post():
     prompt = request.form.get('text')
 
