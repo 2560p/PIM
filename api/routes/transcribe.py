@@ -18,8 +18,12 @@ def transcribe():
     if request.data == b"":
         return err("No file has been detected")
     
+    if request.mimetype.split("/")[0] != "audio":
+        return err("Invalid file format. File is not supported.")
+
     file = io.BytesIO(request.data)
     file.name = "something.mp3"
+    
 
     try:
         result = openai.Audio.transcribe("whisper-1", file).text
