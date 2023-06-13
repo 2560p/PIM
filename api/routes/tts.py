@@ -17,9 +17,9 @@ def tts():
     return err("The language has not been provided")
   elif "text" not in request.form:
     return err("The text has not been provided")
-  else:
-    lang = request.form.get("lang")
-    text = request.form.get("text")
+
+  lang = request.form.get("lang")
+  text = request.form.get("text")
 
 # This is normal Marijn
   url = "https://api.elevenlabs.io/v1/text-to-speech/xEucmSu4xLB83D3WYWPa"
