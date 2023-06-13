@@ -13,7 +13,7 @@ conversation_page = Blueprint('conversation_page', __name__)
 def post():
     prompt = request.form.get('text')
 
-    if prompt == "":
+    if not prompt:
         return err("Text cannot be empty.")
 
     try:
