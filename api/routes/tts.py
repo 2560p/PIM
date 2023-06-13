@@ -31,9 +31,39 @@ def tts():
     }
   }
 
+
+
+
+
+
+  try:
+    if lang == "en" and text != "":
+      resp = requests.post(url, json=payload, headers=headers)
+      file = io.BytesIO(resp.content)
+      return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
+    
+    else:
+      if lang == "" and text == "":
+        raise Exception("No language specified and no text has been provided to turn into speech")
+      elif lang != "en" and text == "":
+        raise Exception("Language not supported yet and no text has been provivided to turn into speech")
+      elif lang == "":
+        raise Exception("No lnaguage specified")
+      elif lang != "en":
+        raise Exception("Language not supported")
+      if text == "":
+        raise Exception("No text has been filled in to be turned into speech")
+    
+  except Exception as de:
+    error_message = "ERROR: " + str(de)
+    print(error_message)
+    return error_message
+  
+"""
   if lang == "en":  
     resp = requests.post(url, json=payload, headers=headers)
     file = io.BytesIO(resp.content)
     return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
   else:
     return err("lang not supported (yet)")
+"""
