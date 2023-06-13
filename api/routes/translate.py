@@ -2,7 +2,6 @@ from flask import Blueprint, request
 import openai
 import os
 from dotenv import load_dotenv
-import requests
 from responses import ok, err, server_err
 
 translate_page = Blueprint('translate_page', __name__)
