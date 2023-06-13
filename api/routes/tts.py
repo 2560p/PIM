@@ -11,9 +11,19 @@ tts_page = Blueprint('tts_page', __name__)
 
 @tts_page.route('', methods=["POST"])
 def tts(): 
-  lang = request.form.get("lang")
-  text = request.form.get("text")
-
+  if "lang" in request.form and "text" in request.form:
+    lang = request.form.get("lang")
+    text = request.form.get("text")
+  else:
+    if "lang" not in request.form and "text" not in request.form:
+      return err("The language and text have not been provided")
+    elif "lang" not in request.form:
+      return err("The language has not been provided")
+    elif "text" not in request.form:
+      return err("The text has not been provided")
+    else:
+      return server_err("I have no clue what happened. You shouldn't see this error.")
+  
 # This is normal Marijn
   url = "https://api.elevenlabs.io/v1/text-to-speech/xEucmSu4xLB83D3WYWPa"
   
@@ -31,25 +41,19 @@ def tts():
     }
   }
 
-  try:
-    if lang == "en" and text != "":
-      resp = requests.post(url, json=payload, headers=headers)
-      file = io.BytesIO(resp.content)
-      return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
-    
-    else:
-      if lang == "" and text == "":
-        raise Exception("No language specified and no text has been provided to turn into speech")
-      elif lang != "en" and text == "":
-        raise Exception("Language not supported yet and no text has been provivided to turn into speech")
-      elif lang == "":
-        raise Exception("No lnaguage specified")
-      elif lang != "en":
-        raise Exception("Language not supported")
-      if text == "":
-        raise Exception("No text has been filled in to be turned into speech")
-    
-  except Exception as de:
-    error_message = "ERROR: " + str(de)
-    print(error_message)
-    return error_message
+  if lang == "en" and text != "":
+    resp = requests.post(url, json=payload, headers=headers)
+    file = io.BytesIO(resp.content)
+    return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
+  
+  else:
+    if lang == "" and text == "":
+      return err("No language specified and no text has been provided to turn into speech")
+    elif lang != "en" and text == "":
+      return err("Language not supported yet and no text has been provivided to turn into speech")
+    elif lang == "":
+      return err("No lnaguage specified")
+    elif lang != "en":
+      return err("Language not supported")
+    if text == "":
+      return err("No text has been filled in to be turned into speech")
