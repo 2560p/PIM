@@ -22,7 +22,7 @@ def transcribe():
 
     file = io.BytesIO(request.data)
     file.name = "something.mp3"
-    
+
     try:
         result = openai.Audio.transcribe("whisper-1", file).text
     except:
