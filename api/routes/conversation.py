@@ -1,13 +1,11 @@
 from flask import Blueprint, request
-
 import os
 import openai
 from responses import ok, err, server_err
-
 from dotenv import load_dotenv
+
 load_dotenv()
 openai.api_key = os.environ["OPENAI_API_KEY"]
-
 conversation_page = Blueprint('conversation_page', __name__)
 
 
@@ -15,11 +13,17 @@ conversation_page = Blueprint('conversation_page', __name__)
 def post():
     prompt = request.form.get('text')
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "user", "content": prompt}
-        ]
-    )
+    if not prompt:
+        return err("Text cannot be empty.")
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+    except Exception:
+        return server_err("An error occurred during API request")
 
     return ok(response.choices[0].message["content"])
