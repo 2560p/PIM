@@ -48,7 +48,7 @@ def tts():
     return err("Language not supported")
   elif text == "":
     return err("No text has been filled in to be turned into speech")
-  else:
-    resp = requests.post(url, json=payload, headers=headers)
-    file = io.BytesIO(resp.content)
-    return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
+
+  resp = requests.post(url, json=payload, headers=headers)
+  file = io.BytesIO(resp.content)
+  return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
