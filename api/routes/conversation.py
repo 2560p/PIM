@@ -15,15 +15,15 @@ def post():
 
     if prompt == "":
         return err("Text cannot be empty.")
-    else:
+
+    try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
                 {"role": "user", "content": prompt}
             ]
         )
+    except Exception:
+        return server_err("An error occurred during API request")
 
-    if response:
-        return ok(response.choices[0].message["content"])
-    else:
-        return err("Error occurred during API response.")
+    return ok(response.choices[0].message["content"])
