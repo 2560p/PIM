@@ -31,11 +31,6 @@ def tts():
     }
   }
 
-
-
-
-
-
   try:
     if lang == "en" and text != "":
       resp = requests.post(url, json=payload, headers=headers)
@@ -58,12 +53,3 @@ def tts():
     error_message = "ERROR: " + str(de)
     print(error_message)
     return error_message
-  
-"""
-  if lang == "en":  
-    resp = requests.post(url, json=payload, headers=headers)
-    file = io.BytesIO(resp.content)
-    return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
-  else:
-    return err("lang not supported (yet)")
-"""
