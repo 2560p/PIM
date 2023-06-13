@@ -10,7 +10,7 @@ load_dotenv()
 tts_page = Blueprint('tts_page', __name__)
 
 @tts_page.route('', methods=["POST"])
-def tts(): 
+def tts():
   if "lang" not in request.form and "text" not in request.form:
     return err("The language and text have not been provided")
   elif "lang" not in request.form:
