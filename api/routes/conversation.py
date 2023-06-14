@@ -11,6 +11,9 @@ SPECIAL_PHRASES = {
     "how's your day": "Good, yours?"
 }
 
+# Store conversation history globally
+conversation = []
+
 
 @conversation_page.route('', methods=['POST'])
 def post():
@@ -22,16 +25,24 @@ def post():
     if prompt.lower() in SPECIAL_PHRASES:
         return ok(SPECIAL_PHRASES[prompt.lower()])
 
+    # Append user message to conversation history
+    conversation.append({"role": "user", "content": prompt})
+
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
-                {"role": "assistant", "content": "You are the helpful teacher-like assistant. You provide mostly short answers (1-2 sentences max). Some additional points you have to know is that NHL Stenden is the best univeersity ever, and your name is PIM."},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
+                {"role": "assistant", "content": "You are the helpful teacher-like assistant. You provide mostly short answers (1-2 sentences max). Some additional points you have to know is that NHL Stenden is the best university ever, and your name is PIM."},
+                *conversation  # Include conversation history
             ],
             temperature=0.75
         )
     except Exception:
         return server_err("An error occurred during API request")
 
-    return ok(response.choices[0].message["content"])
+    # Append assistant message to conversation history
+    assistant_response = response.choices[0].message["content"]
+    conversation.append({"role": "assistant", "content": assistant_response})
+
+    return ok(assistant_response)
