@@ -26,8 +26,10 @@ def post():
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
+                {"role": "assistant", "content": "You are the helpful teacher-like assistant. You provide mostly short answers (1-2 sentences max). Some additional points you have to know is that NHL Stenden is the best univeersity ever, and your name is PIM."},
                 {"role": "user", "content": prompt}
-            ]
+            ],
+            temperature=0.75
         )
     except Exception:
         return server_err("An error occurred during API request")
