@@ -20,7 +20,7 @@ def get_quiz():
     if not level:
         return err("no level provided.")
 
-    if level not in ["initial", "begginer", "intermediate", "advanced"]:
+    if level not in ["initial", "beginner", "intermediate", "advanced"]:
         return err("invalid level provided.")
 
     return ok(get_questions(level))
@@ -39,7 +39,7 @@ def get_questions(level):
                    "and finishing with B1. It should resemble the initial test"
                    "so that the user can see their progress. ")
 
-    if level == "begginer":
+    if level == "beginner":
         prompt += "Aim for the A1 level."
 
     if level == "intermediate":
