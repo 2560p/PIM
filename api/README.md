@@ -19,6 +19,7 @@ _400_, on the other hand, means that the user has failed to provide the right re
 | Endpoint | Parameters | Response |
 | -------- | -------- | -------- |
 | /transcribe | _file as post data_ | "data": _transcribed text_ |
-| /tts | {<br>"lang": _target language_,<br>"text": _text to translate_,<br>} | _mp3 file_ |
+| /tts | {<br>"lang": _target language (en)_,<br>"text": _text to translate_,<br>} | _mp3 file_ |
 | /translate | {<br>&#9;"text": _text to translate_,<br>} | "data": _translated text_ |
 | /conversation | {<br>"text": _message_<br>} | "data": _reply to the message_ |
+| /quiz | {<br>"level": _level of complexity (initial, beginner, intermediate, advanced)_<br>} | "data": _[{"question": "__word in Dutch__", "answer": "__word in English__"}, ... (10 questions in total)]_
