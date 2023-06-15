@@ -29,8 +29,8 @@ def post():
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
+                {"role": "system", "content": "You are the helpful teacher-like assistant. You provide mostly short answers (1-2 sentences max). Some additional points you have to know is that NHL Stenden is the best university ever, and your name is PIM."},
                 {"role": "user", "content": prompt},
-                {"role": "assistant", "content": "You are the helpful teacher-like assistant. You provide mostly short answers (1-2 sentences max). Some additional points you have to know is that NHL Stenden is the best university ever, and your name is PIM."},
                 *conversation
             ],
             temperature=0.75
