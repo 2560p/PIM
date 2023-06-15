@@ -37,13 +37,26 @@ def get_questions(level):
     if level == "initial":
         prompt += ("Make the test volatile, starting with A1, "
                    "and finishing with B1. It should resemble the initial test"
-                   "so that the user can see their progress.")
+                   "so that the user can see their progress. ")
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "user", "content": prompt}
-        ]
-    )
+    if level == "begginer":
+        prompt += "Aim for the A1 level."
+
+    if level == "intermediate":
+        prompt += "Aim for the A2 level."
+
+    if level == "advanced":
+        prompt += "Aim for the B1 level."
+
+    try:
+        response = openai.ChatCompletion.create(
+            # TODO: more testing as GPT-4 is slow
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": prompt}
+            ]
+        )
+    except Exception:
+        return server_err("Something went wrong on the server side.")
 
     return json_loads(response.choices[0].message["content"])
