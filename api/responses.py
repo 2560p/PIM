@@ -4,11 +4,23 @@ from flask import jsonify
 # it also helps with consistency.
 # TODO: docs for the API (responses, where, why, how, etc.)
 
+
 def ok(data):
-    return jsonify({'success': True, 'data': data}), 200
+    response = jsonify({'success': True, 'data': data})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.status_code = 200
+    return response
+
 
 def err(err):
-    return jsonify({'success': False, 'errors': err}), 400
+    response = jsonify({'success': False, 'errors': err})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.status_code = 400
+    return response
+
 
 def server_err(err):
-    return jsonify({'success': False, 'errors': err}), 500
+    response = jsonify({'success': False, 'errors': err})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.status_code = 500
+    return response
