@@ -4,6 +4,7 @@ import requests
 import io
 from dotenv import load_dotenv
 import os
+from gtts import gTTS
 
 load_dotenv()
 
@@ -40,18 +41,28 @@ def tts():
 
   if lang == "" and text == "":
     return err("No language specified and no text has been provided to turn into speech")
-  elif lang != "en" and text == "":
+  elif lang != "en" and lang != "nl"and text == "":
     return err("Language not supported yet and no text has been provivided to turn into speech")
   elif lang == "":
     return err("No lnaguage specified")
-  elif lang != "en":
+  elif lang != "en" and lang != "nl":
     return err("Language not supported")
   elif text == "":
     return err("No text has been filled in to be turned into speech")
 
-  try:
-    resp = requests.post(url, json=payload, headers=headers)
-    file = io.BytesIO(resp.content)
-    return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
-  except:
-    return server_err("An error has occurred within the server")
+  if lang == "en":
+    try:
+      resp = requests.post(url, json=payload, headers=headers)
+      file = io.BytesIO(resp.content)
+      return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
+    except:
+      return server_err("An error has occurred within the server")
+  elif lang == "nl":
+    try:
+      resp = gTTS(text, lang='nl')
+      file = io.BytesIO()
+      resp.write_to_fp(file)
+      file.seek(0)
+      return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
+    except Exception as e:
+      return server_err("An error has occurred within the server: " + str(e))
