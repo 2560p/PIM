@@ -50,19 +50,22 @@ def tts():
   elif text == "":
     return err("No text has been filled in to be turned into speech")
 
+  file = io.BytesIO()
+
   if lang == "en":
     try:
       resp = requests.post(url, json=payload, headers=headers)
-      file = io.BytesIO(resp.content)
-      return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
     except:
       return server_err("An error has occurred within the server")
-  elif lang == "nl":
+
+    file.write(resp.content)
+  else:
     try:
       resp = gTTS(text, lang='nl')
-      file = io.BytesIO()
-      resp.write_to_fp(file)
-      file.seek(0)
-      return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
-    except Exception as e:
-      return server_err("An error has occurred within the server: " + str(e))
+    except:
+      return server_err("An error has occurred within the server")
+
+    resp.write_to_fp(file)
+
+  file.seek(0)
+  return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
