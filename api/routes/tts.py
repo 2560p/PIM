@@ -1,4 +1,4 @@
-from flask import Blueprint, request, send_file, Response
+from flask import Blueprint, request, Response
 from responses import ok, err, server_err
 import requests
 import io
@@ -72,4 +72,3 @@ def tts():
   audio_data = base64.b64encode(file.getvalue()).decode('utf-8')
   response_html = f'<audio controls autoplay><source src="data:audio/mpeg;base64,{audio_data}" type="audio/mpeg"></audio>'
   return Response(response_html, content_type='text/html')
-  # return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
