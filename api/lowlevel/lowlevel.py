@@ -1,7 +1,7 @@
 from flask import Blueprint, request, send_file
 from responses import ok, err, server_err
 
-from lowlevel.functions import translate, transcribe, tts
+from lowlevel.functions import translate, transcribe, tts, quiz
 
 ll_endpoint = Blueprint('ll_endpoint', __name__)
 
@@ -58,3 +58,21 @@ def respond_tts():
         return server_err(answer[1])
 
     return send_file(answer[1], mimetype='audio/mpeg', download_name='file.mp3')
+
+
+@ll_endpoint.route('quiz', methods=['POST'])
+def respond_quiz():
+    level = request.form.get('level')
+
+    if not level:
+        return err('No level has been provided')
+
+    if level not in ['initial', 'beginner', 'intermediate', 'advanced']:
+        return err('Invalid level has been provided')
+
+    answer = quiz(level)
+
+    if answer[0] == 500:
+        return server_err(answer[1])
+
+    return ok(answer[1])

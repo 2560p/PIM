@@ -3,6 +3,7 @@ import io
 import requests
 
 from gtts import gTTS
+from json import loads as json_loads
 
 from dotenv import load_dotenv
 import os
@@ -73,3 +74,38 @@ def tts(lang, text):
 
     file.seek(0)
     return (200, file)
+
+
+def quiz(level):
+    prompt = ("You generate a quiz to test user's abilities in Dutch. "
+              "It is a JSON array with 10 objects of type "
+              "{\"question\": \"...\", \"answer\": \"...\"}. "
+              "Question is a word in Dutch, and answer"
+              "is the English translation. "
+              "Also skip the articles. ")
+
+    if level == "initial":
+        prompt += ("Make the test volatile, starting with A1, "
+                   "and finishing with B1. It should resemble the initial test "
+                   "so that the user can see their progress. ")
+
+    if level == "beginner":
+        prompt += "Aim for the A1 level."
+
+    if level == "intermediate":
+        prompt += "Aim for the A2 level."
+
+    if level == "advanced":
+        prompt += "Aim for the B1 level."
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": prompt}
+            ]
+        )
+    except Exception:
+        return (500, "Something went wrong on the server side.")
+
+    return (200, json_loads(response.choices[0].message["content"]))
