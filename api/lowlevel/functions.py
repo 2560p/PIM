@@ -1,22 +1,13 @@
-from flask import Blueprint, request
 import openai
-import os
-from dotenv import load_dotenv
-from responses import ok, err, server_err
 
-translate_page = Blueprint('translate_page', __name__)
+from dotenv import load_dotenv
+import os
 
 load_dotenv()
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
-@translate_page.route('', methods=['POST'])
-def post():
-    prompt = request.form.get('text')
-
-    if not prompt:
-        return err("Please input text to be translated")
-
+def translate(prompt):
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
@@ -26,7 +17,7 @@ def post():
                 {"role": "system", "content": prompt},
             ]
         )
-    except:
-        return server_err("Error occurred during API response")
+    except Exception:
+        return (500, "Error occurred during API response")
 
-    return ok(response.choices[0].message.content)
+    return (200, response.choices[0].message.content)
