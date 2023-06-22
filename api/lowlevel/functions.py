@@ -25,9 +25,9 @@ def translate(prompt):
             ]
         )
     except Exception:
-        return (500, 'Error occurred during API response')
+        return (False, 'Error occurred during API response')
 
-    return (200, response.choices[0].message.content)
+    return (True, response.choices[0].message.content)
 
 
 def transcribe(data):
@@ -37,9 +37,9 @@ def transcribe(data):
     try:
         result = openai.Audio.transcribe('whisper-1', file).text
     except Exception:
-        return (500, 'A problem has occurred')
+        return (False, 'A problem has occurred')
 
-    return (200, result)
+    return (True, result)
 
 
 def tts(lang, text):
@@ -65,17 +65,17 @@ def tts(lang, text):
             resp = requests.post(url, json=payload, headers=headers)
             file.write(resp.content)
         except Exception:
-            return (500, 'An error has occurred within the server')
+            return (False, 'An error has occurred within the server')
     else:
         try:
             resp = gTTS(text, lang=lang)
         except Exception:
-            return (500, 'An error has occurred within the server')
+            return (False, 'An error has occurred within the server')
 
         resp.write_to_fp(file)
 
     file.seek(0)
-    return (200, file)
+    return (True, file)
 
 
 def quiz(level):
@@ -108,9 +108,9 @@ def quiz(level):
             ]
         )
     except Exception:
-        return (500, "Something went wrong on the server side.")
+        return (False, "Something went wrong on the server side.")
 
-    return (200, json_loads(response.choices[0].message["content"]))
+    return (True, json_loads(response.choices[0].message["content"]))
 
 
 def conversation(message):
@@ -127,10 +127,10 @@ def conversation(message):
             ],
             temperature=0.75
         )
-    except Exception as e:
-        return (500, "An error occurred during API request.")
+    except Exception:
+        return (False, "An error occurred during API request.")
 
     assistant_response = response.choices[0].message["content"]
     chat_history.append({'role': 'assistant', 'content': assistant_response})
 
-    return (200, assistant_response)
+    return (True, assistant_response)

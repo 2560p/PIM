@@ -15,7 +15,7 @@ def respond_translation():
 
     translation = translate(prompt)
 
-    if translation[0] == 500:
+    if not translation[0]:
         return server_err(translation[1])
 
     return ok(translation[1])
@@ -31,7 +31,7 @@ def respond_transcription():
 
     transcription = transcribe(request.data)
 
-    if transcription[0] == 500:
+    if not transcription[0]:
         return server_err(transcription[1])
 
     return ok(transcription[1])
@@ -54,7 +54,7 @@ def respond_tts():
 
     answer = tts(lang, text)
 
-    if answer[0] == 500:
+    if not answer[0]:
         return server_err(answer[1])
 
     return send_file(answer[1], mimetype='audio/mpeg', download_name='file.mp3')
@@ -72,7 +72,7 @@ def respond_quiz():
 
     answer = quiz(level)
 
-    if answer[0] == 500:
+    if not answer[0]:
         return server_err(answer[1])
 
     return ok(answer[1])
@@ -80,14 +80,14 @@ def respond_quiz():
 
 @ll_endpoint.route('conversation', methods=['POST'])
 def respond_conversation():
-    message = request.form.get('text')
+    message = request.form.get('message')
 
     if not message:
         return err("Text cannot be empty.")
 
     answer = conversation(message)
 
-    if answer[0] == 500:
+    if not answer[0]:
         return server_err(answer[1])
 
     return ok(answer[1])
