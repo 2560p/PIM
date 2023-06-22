@@ -1,4 +1,5 @@
 import openai
+import io
 
 from dotenv import load_dotenv
 import os
@@ -21,3 +22,15 @@ def translate(prompt):
         return (500, "Error occurred during API response")
 
     return (200, response.choices[0].message.content)
+
+
+def transcribe(data):
+    file = io.BytesIO(data)
+    file.name = "something.mp3"
+
+    try:
+        result = openai.Audio.transcribe("whisper-1", file).text
+    except Exception:
+        return (500, "A problem has occurred")
+
+    return (200, result)
