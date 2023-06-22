@@ -1,10 +1,11 @@
-from flask import Blueprint, request, send_file
+from flask import Blueprint, request, send_file, Response
 from responses import ok, err, server_err
 import requests
 import io
 from dotenv import load_dotenv
 import os
 from gtts import gTTS
+import base64
 
 load_dotenv()
 
@@ -68,4 +69,7 @@ def tts():
     resp.write_to_fp(file)
 
   file.seek(0)
-  return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
+  audio_data = base64.b64encode(file.getvalue()).decode('utf-8')
+  response_html = f'<audio controls autoplay><source src="data:audio/mpeg;base64,{audio_data}" type="audio/mpeg"></audio>'
+  return Response(response_html, content_type='text/html')
+  # return send_file(file, mimetype="audio/mpeg", download_name='file.mp3')
