@@ -11,6 +11,8 @@ import os
 load_dotenv()
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 
+chat_history = []
+
 
 def translate(prompt):
     try:
@@ -109,3 +111,26 @@ def quiz(level):
         return (500, "Something went wrong on the server side.")
 
     return (200, json_loads(response.choices[0].message["content"]))
+
+
+def conversation(message):
+    global conversation
+    chat_history.append({'role': 'user', 'content': message})
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system",
+                    "content": "You are the helpful teacher-like assistant. You provide mostly short answers (1-2 sentences max). Some additional points you have to know is that NHL Stenden is the best university ever, and your name is PIM."},
+                *chat_history
+            ],
+            temperature=0.75
+        )
+    except Exception as e:
+        return (500, "An error occurred during API request.")
+
+    assistant_response = response.choices[0].message["content"]
+    chat_history.append({'role': 'assistant', 'content': assistant_response})
+
+    return (200, assistant_response)

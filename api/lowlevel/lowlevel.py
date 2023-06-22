@@ -1,7 +1,7 @@
 from flask import Blueprint, request, send_file
 from responses import ok, err, server_err
 
-from lowlevel.functions import translate, transcribe, tts, quiz
+from lowlevel.functions import translate, transcribe, tts, quiz, conversation
 
 ll_endpoint = Blueprint('ll_endpoint', __name__)
 
@@ -71,6 +71,21 @@ def respond_quiz():
         return err('Invalid level has been provided')
 
     answer = quiz(level)
+
+    if answer[0] == 500:
+        return server_err(answer[1])
+
+    return ok(answer[1])
+
+
+@ll_endpoint.route('conversation', methods=['POST'])
+def respond_conversation():
+    message = request.form.get('text')
+
+    if not message:
+        return err("Text cannot be empty.")
+
+    answer = conversation(message)
 
     if answer[0] == 500:
         return server_err(answer[1])
