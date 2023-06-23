@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, send_file
 from lowlevel.functions import conversation, translate, transcribe, tts
 
 from responses import err, server_err
@@ -40,4 +40,4 @@ def pim_sequence(mode):
     if not answer[0]:
         return err(answer[1])
 
-    return answer[1]
+    return send_file(answer[1], mimetype='audio/mpeg', download_name='file.mp3')
