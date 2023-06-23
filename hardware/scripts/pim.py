@@ -8,9 +8,8 @@ from pydub.playback import play
 
 
 def callback(recognizer, audio):
-    print('called callback')
+    print('got the message, awaiting the response.')
     try:
-        print('got the message, awaiting the response.')
         answer = requests.post('http://127.0.0.1:5000/pim/conversation',
                                data=audio.get_wav_data(),
                                headers={'Content-Type': 'audio/wav'})
