@@ -4,7 +4,7 @@ A helpful AI teacher, assistant, and Dutch language expert
 
 ## Branch (folder) structure
 - `dev-api` (`/api/`) - contains root of API
-- `dev-pico` (`/pico/`) - contains file(-s) for Raspberry Pi Pico
+- `dev-hardware` (`/hardware/`) - contains file(-s) for Raspberry Pi Pico
 
 ## Workflow
 The software team of the group is working on different parts at the same time.
