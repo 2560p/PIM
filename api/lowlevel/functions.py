@@ -20,7 +20,7 @@ def translate(prompt):
             model='gpt-4',
             messages=[
                 {'role': 'system',
-                 'content': 'You are an assistant with translation to Dutch. Your name is Pim. You should always respond with "Alsjeblieft!" when someone thanks you. Otherwise, respond with a Dutch translation of the sentence. Make sure that the level of Dutch is basic, so that even a beginner can understand.'},
+                 'content': 'You are an assistant with translation to Dutch. Your name is Pim. You should always respond with "Alsjeblieft!" when someone thanks you. Otherwise, respond with a Dutch translation of the sentence. Make sure that the level of Dutch is basic, so that even a beginner can understand. You are allowed to translate to a different language besides Dutch and English ONLY if specifically asked to do so'},
                 {'role': 'system', 'content': prompt},
             ]
         )
@@ -35,15 +35,27 @@ def transcribe(data):
     file.name = 'something.mp3'
 
     try:
-        result = openai.Audio.transcribe('whisper-1', file).text
+        result = openai.Audio.transcribe('whisper-1', file, prompt='disregard the coughing. focus on the actual words.').text
     except Exception:
         return (False, 'A problem has occurred')
 
     return (True, result)
 
 
-def tts(lang, text):
+def tts(text):
     file = io.BytesIO()
+    try:
+        response = openai.ChatCompletion.create(
+            model='gpt-4',
+            messages=[
+                {'role': 'system',
+                'content': 'Give me the internationally recognized two letter code of the language of the text that I put in and ONLY the two letter code. Make it lowercase. If you doubt - put "en".'},
+                {'role': 'system', 'content': text},
+            ]
+        )
+    except Exception:
+        return (False, 'Error occurred during API response')
+    lang = response.choices[0].message.content
 
     if lang == 'en':
         try:
@@ -64,13 +76,13 @@ def tts(lang, text):
 
             resp = requests.post(url, json=payload, headers=headers)
             file.write(resp.content)
-        except Exception:
-            return (False, 'An error has occurred within the server')
+        except Exception as e:
+            return (False, 'An error has occurred within the server: ' + str(e))
     else:
         try:
             resp = gTTS(text, lang=lang)
-        except Exception:
-            return (False, 'An error has occurred within the server')
+        except Exception as e:
+            return (False, 'An error has occurred within the server: ' + str(e))
 
         resp.write_to_fp(file)
 

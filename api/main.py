@@ -33,11 +33,11 @@ def pim_sequence(mode):
         return err(data[1])
 
     if mode == 'conversation':
-        answer = tts('en', data[1])
+        answer = tts(data[1])
     else:
-        answer = tts('nl', data[1])
+        answer = tts(data[1])
 
     if not answer[0]:
-        return err(answer[1])
+        return server_err(answer[1])
 
     return send_file(answer[1], mimetype='audio/mpeg', download_name='file.mp3')
