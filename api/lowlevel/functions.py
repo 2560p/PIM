@@ -35,7 +35,8 @@ def transcribe(data):
     file.name = 'something.mp3'
 
     try:
-        result = openai.Audio.transcribe('whisper-1', file, prompt='disregard the coughing. focus on the actual words.').text
+        result = openai.Audio.transcribe(
+            'whisper-1', file, prompt='disregard the coughing. focus on the actual words.').text
     except Exception:
         return (False, 'A problem has occurred')
 
@@ -49,7 +50,7 @@ def tts(text):
             model='gpt-4',
             messages=[
                 {'role': 'system',
-                'content': 'Give me the internationally recognized two letter code of the language of the text that I put in and ONLY the two letter code. Make it lowercase. If you doubt - put "en".'},
+                 'content': 'Give me the internationally recognized two letter code of the language of the text that I put in and ONLY the two letter code. Make it lowercase. If you doubt - put "en".'},
                 {'role': 'system', 'content': text},
             ]
         )
@@ -146,3 +147,32 @@ def conversation(message):
     chat_history.append({'role': 'assistant', 'content': assistant_response})
 
     return (True, assistant_response)
+
+
+def mode_switcher(message):
+    schema = {
+        'type': 'object',
+        'properties': {
+            'action': {'type': 'string',
+                       'description': 'Might be either "mode_switch" or "pass". Mode switch is triggered when the user is asking to change the mode to "translation" or "conversation". Pass is used in any other case.'},
+            'mode': {'type': 'string',
+                     'description': 'Might be either "translation" or "conversation". Only used when action is "mode_switch".'},
+        },
+        'required': ['action'],
+    }
+
+    try:
+        response = openai.ChatCompletion.create(
+            model='gpt-4-0613',
+            messages=[
+                {'role': 'system',
+                 'content': 'Determine whether the user wants to switch the mode based on the message.'},
+                {'role': 'user', 'content': message},
+            ],
+            functions=[{'name': 'mode_switcher', 'parameters': schema}],
+            function_call={'name': 'mode_switcher'}
+        )
+    except Exception:
+        return (False, 'An error occurred during API request')
+
+    return (True, response.choices[0].message.function_call.arguments)
