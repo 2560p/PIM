@@ -77,13 +77,13 @@ def tts(text):
 
             resp = requests.post(url, json=payload, headers=headers)
             file.write(resp.content)
-        except Exception as e:
-            return (False, 'An error has occurred within the server: ' + str(e))
+        except Exception:
+            return (False, 'An error has occurred within the server')
     else:
         try:
             resp = gTTS(text, lang=lang)
-        except Exception as e:
-            return (False, 'An error has occurred within the server: ' + str(e))
+        except Exception:
+            return (False, 'An error has occurred within the server')
 
         resp.write_to_fp(file)
 
