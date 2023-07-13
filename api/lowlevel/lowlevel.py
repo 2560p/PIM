@@ -39,20 +39,12 @@ def respond_transcription():
 
 @ll_endpoint.route('tts', methods=['POST'])
 def respond_tts():
-    lang = request.form.get('lang')
     text = request.form.get('text')
 
-    if not lang and not text:
-        return err('The language and text have not been provided')
-    elif not lang:
-        return err('The language has not been provided')
-    elif not text:
+    if not text:
         return err('The text has not been provided')
 
-    if lang not in ['en', 'nl']:
-        return err('The language is not supported')
-
-    answer = tts(lang, text)
+    answer = tts(text)
 
     if not answer[0]:
         return server_err(answer[1])

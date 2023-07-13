@@ -2,6 +2,7 @@ import time
 import speech_recognition as sr
 import requests
 import io
+from base64 import b64decode, b64encode
 
 from pydub import AudioSegment
 from pydub.playback import play
@@ -13,54 +14,34 @@ def callback(recognizer, audio):
     print('Recognizing...')
     global MODE
 
+    data = {
+        'audio': b64encode(audio.get_wav_data()).decode('ascii'),
+        'mode': MODE,
+    }
+
     try:
         resp = requests.post(
-            'http://127.0.0.1:5000/ll/transcribe',
-            data=audio.get_wav_data(),
-            headers={'Content-Type': 'audio/wav'})
-
-        assert resp.status_code == 200
-    except Exception:
-        return
-
-    words = resp.json()['data'].lower().replace(
-        '.', '').replace(',', '').replace('?', '').split(' ')
-
-    if 'conversation' in words:
-        MODE = 'conversation'
-        print('Conversation mode activated.')
-        return
-
-    if 'translation' in words:
-        MODE = 'translation'
-        print('Translation mode activated.')
-        return
-
-    if not MODE:
-        print('No mode selected.')
-        return
-
-    endpoint = 'http://127.0.0.1:5000/pim/'
-    match MODE:
-        case 'conversation':
-            endpoint += 'conversation'
-            print('Getting the conversation response...')
-        case 'translation':
-            endpoint += 'translation'
-            print('Getting the translation response...')
-
-    try:
-        answer = requests.post(endpoint,
-                               data=audio.get_wav_data(),
-                               headers={'Content-Type': 'audio/wav'})
-
-        assert answer.status_code == 200
+            'http://127.0.0.1:5000/pim',
+            data=data,
+        )
     except Exception:
         print('Failed to get the response from the server')
+        return
 
-    print('Playing the sound...')
-    play(AudioSegment.from_file(io.BytesIO(answer.content), format='mp3'))
-    print('done.\n\n')
+    if resp.status_code != 200:
+        print(resp.json()['errors'])
+        return
+
+    if resp.json()['data'].get('mode_switch'):
+        MODE = resp.json()['data']['mode_switch']['mode']
+        print(f'{MODE.capitalize()} mode activated.')
+        return
+
+    print('Got audio response. Playing...')
+    play(AudioSegment.from_file(io.BytesIO(
+        b64decode(resp.json()['data']['audio'])), format='mp3'))
+    print('Done.\n\n')
+
     print('Listening...')
 
 

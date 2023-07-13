@@ -1,25 +1,40 @@
 from flask import Blueprint, request, send_file
-from lowlevel.functions import conversation, translate, transcribe, tts
+from lowlevel.functions import conversation, translate, transcribe, tts, mode_switcher
 
-from responses import err, server_err
+from responses import ok, err, server_err
+
+from base64 import b64encode, b64decode
+from json import loads as json_loads
 
 main_endpoint = Blueprint('main_endpoint', __name__)
 
 
-@main_endpoint.route('<mode>', methods=['POST'])
-def pim_sequence(mode):
-    if request.data == b'':
-        return err('No file has been detected')
+@main_endpoint.route('', methods=['POST'])
+def pim_sequence():
+    if not request.form.get('audio'):
+        return err('No audio was provided')
 
-    if request.mimetype.split('/')[0] != 'audio':
-        return err('Invalid file format. File is not supported.')
-
-    transcription = transcribe(request.data)
+    transcription = transcribe(b64decode(request.form.get('audio')))
 
     if not transcription[0]:
         return server_err(transcription[1])
 
+    mode = request.form.get('mode')
+
     message = transcription[1]
+
+    if not mode:
+        switch = mode_switcher(message)
+
+        if not switch[0]:
+            return server_err(switch[1])
+
+        switch = json_loads(switch[1])
+
+        if switch['action'] == 'mode_switch':
+            return ok({'mode_switch': {'mode': switch['mode']}})
+        else:
+            return err('No mode selected')
 
     match mode:
         case 'conversation':
@@ -33,11 +48,12 @@ def pim_sequence(mode):
         return err(data[1])
 
     if mode == 'conversation':
-        answer = tts('en', data[1])
+        answer = tts(data[1])
     else:
-        answer = tts('nl', data[1])
+        answer = tts(data[1])
 
     if not answer[0]:
-        return err(answer[1])
+        return server_err(answer[1])
 
-    return send_file(answer[1], mimetype='audio/mpeg', download_name='file.mp3')
+    audio = b64encode(answer[1].getvalue())
+    return ok({'data': data[1], 'audio': audio.decode('ascii')})
