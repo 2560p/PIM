@@ -1,7 +1,7 @@
 from flask import Blueprint, request, send_file
 from responses import ok, err, server_err
 
-from lowlevel.functions import translate, transcribe, tts, quiz, conversation
+from lowlevel.functions import translate, transcribe, tts, quiz, conversation, quiz_checker
 
 ll_endpoint = Blueprint('ll_endpoint', __name__)
 
@@ -83,3 +83,25 @@ def respond_conversation():
         return server_err(answer[1])
 
     return ok(answer[1])
+
+
+@ll_endpoint.route('check_translation', methods=['POST'])
+def respond_check_translation():
+    word = request.form.get('word')
+    answer = request.form.get('answer')
+
+    if not word:
+        return err("Provide a word to be translated.")
+
+    if not answer:
+        return err("Provide an answer.")
+
+    word = word.lower()
+    answer = answer.lower()
+
+    result = quiz_checker(answer, word)
+
+    if not result[0]:
+        return server_err(result[1])
+
+    return ok(result[1])
