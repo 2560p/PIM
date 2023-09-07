@@ -176,9 +176,9 @@ def mode_switcher(message):
         'type': 'object',
         'properties': {
             'action': {'type': 'string',
-                       'description': 'Might be either "mode_switch" or "pass". Mode switch is triggered when the user is asking to change the mode to "translation" or "conversation". Pass is used in any other case.'},
+                       'description': 'Might be either "mode_switch" or "pass". Mode switch is triggered when the user is asking to change the mode to "translation", "conversation", or "quiz". Pass is used in any other case. The user might need to "exit" the current mode - then "mode_switch" is also triggered.'},
             'mode': {'type': 'string',
-                     'description': 'Might be either "translation" or "conversation". Only used when action is "mode_switch".'},
+                     'description': 'Might be "translation", "conversation", or "quiz". Only used when action is "mode_switch". If the user wants to exit the current mode - "conversation" should be returned.'},
         },
         'required': ['action'],
     }
@@ -190,6 +190,31 @@ def mode_switcher(message):
                 {'role': 'system',
                  'content': 'Determine whether the user wants to switch the mode based on the message.'},
                 {'role': 'user', 'content': message},
+            ],
+            functions=[{'name': 'mode_switcher', 'parameters': schema}],
+            function_call={'name': 'mode_switcher'}
+        )
+    except Exception:
+        return (False, 'An error occurred during API request')
+
+    return (True, response.choices[0].message.function_call.arguments)
+
+
+def quiz_checker(answer, word):
+    schema = {
+        'type': 'object',
+        'properties': {
+            'translated': {'type': 'boolean',
+                           'description': 'If the english word can be translated to dutch, this is true. Otherwise, false.'},
+        },
+        'required': ['action'],
+    }
+
+    try:
+        response = openai.ChatCompletion.create(
+            model='gpt-4-0613',
+            messages=[
+                {'role': 'user', 'content': f'Can english word "{answer}" be translated to dutch as "{word}"?'},
             ],
             functions=[{'name': 'mode_switcher', 'parameters': schema}],
             function_call={'name': 'mode_switcher'}
