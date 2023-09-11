@@ -85,6 +85,69 @@ def callback(recognizer, audio):
 
             return
 
+        if quiz_position != 0:
+            resp = requests.post(
+                'http://127.0.0.1:5000/ll/check_translation',
+                data={'word': quiz[quiz_position - 1]['question'],
+                      'translation': quiz[quiz_position - 1]['answer']},
+            )
+
+            if resp.status_code != 200:
+                print(resp.json()['errors'])
+                return
+
+            if resp.json()['data']:
+                data = 'Correct!'
+                resp = requests.post(
+                    'http://127.0.0.1:5000/ll/tts',
+                    data={'text': data},
+                )
+
+                if resp.status_code != 200:
+                    print(resp.json()['errors'])
+                    return
+
+                play(AudioSegment.from_file(io.BytesIO(
+                    b64decode(resp.json()['data']['audio'])), format='mp3'))
+
+                quiz_position += 1
+            else:
+                data = 'Incorrect! Try again.'
+                resp = requests.post(
+                    'http://127.0.0.1:5000/ll/tts',
+                    data={'text': data},
+                )
+
+                if resp.status_code != 200:
+                    print(resp.json()['errors'])
+                    return
+
+                play(AudioSegment.from_file(io.BytesIO(
+                    b64decode(resp.json()['data']['audio'])), format='mp3'))
+
+        data_question = "Translate the followind word into ducth"
+        data_word = quiz[quiz_position]['question']
+
+        resp_question = requests.post(
+            'http://127.0.0.1:5000/ll/tts',
+            data={'text': data_question},
+        )
+
+        resp_word = requests.post(
+            'http://127.0.0.1:5000/ll/tts',
+            data={'text': data_word},
+        )
+
+        if resp_question.status_code != 200 or resp_word.status_code != 200:
+            print(resp.json()['errors'])
+            return
+
+        play(AudioSegment.from_file(io.BytesIO(
+            b64decode(resp_question.json()['data']['audio'])), format='mp3'))
+
+        play(AudioSegment.from_file(io.BytesIO(
+            b64decode(resp_word.json()['data']['audio'])), format='mp3'))
+
     print('Got audio response. Playing...')
     play(AudioSegment.from_file(io.BytesIO(
         b64decode(resp.json()['data']['audio'])), format='mp3'))
